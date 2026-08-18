@@ -1,0 +1,11 @@
+# Merge the relevant keys into ~/.hermes/config.yaml.
+# Exact provider/model values are intentionally left to the user's existing Hermes setup.
+
+skills:
+  config:
+    person_memory:
+      db_path: ~/.hermes/person-memory/memory.db
+
+cron:
+  # Keep unattended jobs stable if your Hermes release supports this guard.
+  model_drift_guard: true
