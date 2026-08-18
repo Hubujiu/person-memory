@@ -33,6 +33,11 @@ class TriggerTests(unittest.TestCase):
         self.assertFalse(result["matched"])
         self.assertEqual(result["reason"], "excluded")
 
+    def test_forget_request_routes_to_memory_management(self):
+        result = trigger.match_text("删除记忆：她喜欢香菜", self.config)
+        self.assertTrue(result["matched"])
+        self.assertEqual(result["mode"], "manage")
+
     def test_unrelated_message_does_not_match(self):
         result = trigger.match_text("帮我解释一下 Java 泛型", self.config)
         self.assertFalse(result["matched"])
