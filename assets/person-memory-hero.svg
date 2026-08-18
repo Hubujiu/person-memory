@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-labelledby="title description">
+  <title id="title">Person Memory</title>
+  <desc id="description">A person connected to evidence-backed memory nodes and local storage.</desc>
+  <defs>
+    <linearGradient id="background" x1="80" y1="40" x2="1200" y2="600" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#14152F"/>
+      <stop offset="0.55" stop-color="#28235D"/>
+      <stop offset="1" stop-color="#3F2469"/>
+    </linearGradient>
+    <linearGradient id="memory" x1="845" y1="128" x2="1092" y2="516" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#B9B5FF"/>
+      <stop offset="1" stop-color="#7C72E8"/>
+    </linearGradient>
+    <filter id="glow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="14"/>
+    </filter>
+  </defs>
+
+  <rect width="1280" height="640" rx="32" fill="url(#background)"/>
+  <circle cx="1130" cy="70" r="210" fill="#A68BFF" opacity="0.08"/>
+  <circle cx="1010" cy="590" r="260" fill="#F3A875" opacity="0.06"/>
+  <path d="M84 92H1196" stroke="#FFFFFF" stroke-opacity="0.09"/>
+
+  <g font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif">
+    <g transform="translate(84 119)">
+      <rect width="188" height="40" rx="20" fill="#FFFFFF" fill-opacity="0.09" stroke="#FFFFFF" stroke-opacity="0.16"/>
+      <circle cx="23" cy="20" r="5" fill="#F3A875"/>
+      <text x="39" y="26" font-size="16" font-weight="650" fill="#E9E8FF" letter-spacing="1.5">AGENT SKILL</text>
+    </g>
+
+    <text x="80" y="263" font-size="82" font-weight="760" fill="#FFFFFF" letter-spacing="-3">Person Memory</text>
+    <text x="84" y="326" font-size="27" font-weight="520" fill="#D8D5F6">Local-first memory for AI agents</text>
+    <text x="84" y="365" font-size="27" font-weight="520" fill="#D8D5F6">grounded in evidence.</text>
+
+    <g transform="translate(84 426)">
+      <rect width="152" height="42" rx="21" fill="#FFFFFF" fill-opacity="0.08"/>
+      <circle cx="24" cy="21" r="5" fill="#86D8BE"/>
+      <text x="40" y="27" font-size="16" font-weight="600" fill="#F4F3FF">Local first</text>
+    </g>
+    <g transform="translate(248 426)">
+      <rect width="184" height="42" rx="21" fill="#FFFFFF" fill-opacity="0.08"/>
+      <circle cx="24" cy="21" r="5" fill="#F3A875"/>
+      <text x="40" y="27" font-size="16" font-weight="600" fill="#F4F3FF">Evidence backed</text>
+    </g>
+    <g transform="translate(444 426)">
+      <rect width="166" height="42" rx="21" fill="#FFFFFF" fill-opacity="0.08"/>
+      <circle cx="24" cy="21" r="5" fill="#B9B5FF"/>
+      <text x="40" y="27" font-size="16" font-weight="600" fill="#F4F3FF">Privacy aware</text>
+    </g>
+
+    <text x="84" y="540" font-size="16" font-weight="500" fill="#A8A5CC">Unified skill · Hermes-ready independent agent · SQLite</text>
+  </g>
+
+  <g>
+    <path d="M814 320C875 272 928 225 981 168" stroke="#B9B5FF" stroke-width="3" stroke-linecap="round" opacity="0.54"/>
+    <path d="M814 320C894 326 975 330 1070 319" stroke="#B9B5FF" stroke-width="3" stroke-linecap="round" opacity="0.54"/>
+    <path d="M814 320C880 377 939 432 1014 486" stroke="#B9B5FF" stroke-width="3" stroke-linecap="round" opacity="0.54"/>
+    <path d="M814 320C771 268 758 221 768 178" stroke="#F3A875" stroke-width="3" stroke-linecap="round" opacity="0.62"/>
+    <path d="M814 320C766 376 755 426 771 474" stroke="#86D8BE" stroke-width="3" stroke-linecap="round" opacity="0.62"/>
+
+    <circle cx="814" cy="320" r="108" fill="#FFFFFF" opacity="0.05" filter="url(#glow)"/>
+    <circle cx="814" cy="320" r="78" fill="#1D1B43" stroke="#FFFFFF" stroke-opacity="0.23" stroke-width="2"/>
+    <circle cx="814" cy="292" r="23" fill="#E8E6FF"/>
+    <path d="M771 355C778 326 795 315 814 315C833 315 850 326 857 355" fill="#E8E6FF"/>
+
+    <g font-family="Inter, ui-sans-serif, system-ui, sans-serif" text-anchor="middle">
+      <circle cx="981" cy="168" r="48" fill="url(#memory)"/>
+      <text x="981" y="164" font-size="13" font-weight="720" fill="#191634">WISH</text>
+      <text x="981" y="183" font-size="11" fill="#292456">Hokkaido</text>
+
+      <circle cx="1070" cy="319" r="56" fill="#F3A875"/>
+      <text x="1070" y="314" font-size="13" font-weight="720" fill="#372016">EVIDENCE</text>
+      <text x="1070" y="334" font-size="11" fill="#5B3424">original words</text>
+
+      <circle cx="1014" cy="486" r="50" fill="#86D8BE"/>
+      <text x="1014" y="482" font-size="13" font-weight="720" fill="#15372D">RECALL</text>
+      <text x="1014" y="501" font-size="11" fill="#215445">only relevant</text>
+
+      <circle cx="768" cy="178" r="36" fill="#2B2859" stroke="#F3A875" stroke-width="2"/>
+      <text x="768" y="183" font-size="14" font-weight="700" fill="#FFD7BC">01</text>
+
+      <circle cx="771" cy="474" r="36" fill="#2B2859" stroke="#86D8BE" stroke-width="2"/>
+      <text x="771" y="479" font-size="14" font-weight="700" fill="#C1F4E4">DB</text>
+    </g>
+  </g>
+</svg>
