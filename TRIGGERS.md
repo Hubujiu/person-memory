@@ -80,14 +80,23 @@ The keyword configuration is stored in:
 ~/.hermes/skills/productivity/person-memory/triggers.json
 ```
 
-The default config has four concepts:
+The default config contains:
 
 - `keywords.remember`: phrases such as `记住`, `帮我记`, `记一下`, `她说`, `她喜欢`, `她想去`, `忌口`, `纪念日`, `经期`.
 - `keywords.recall`: phrases such as `她喜欢什么`, `她想去哪里`, `她之前说过`, `还记得她`.
+- `keywords.manage`: memory-management requests such as `忘掉`, `删除记忆`, `清除记忆`, `修改记忆`, `更新记忆`.
 - `regex`: broader patterns such as `她 ... 喜欢/不喜欢/想去/想要`.
-- `exclude`: explicit negative instructions such as `不要记`, `别记`, `不用记`, `忘掉`, `删除记忆`.
+- `exclude`: explicit do-not-ingest phrases such as `不要记`, `别记`, `不用记`, `这条别记`.
 
-Exclusions take priority over positive matches.
+If several groups match at once, the default priority is:
+
+```text
+manage > recall > remember
+```
+
+This matters for messages such as `删除记忆：她喜欢香菜`: the content phrase `她喜欢` must not override the destructive memory-management intent.
+
+Exclusions take priority over all positive matches for the current message.
 
 ### Adapter integration
 
@@ -174,7 +183,7 @@ hermes/ROUTER_AGENTS.example.md
 
 Hermes uses `AGENTS.md` for project/agent instructions, so copy or adapt that rule into the Router Agent's `AGENTS.md`.
 
-The router should send a message to Person Memory when the intent is to **store, update, search, recall, or use facts about a specific important person**.
+The router should send a message to Person Memory when the intent is to **store, update, delete, search, recall, or use facts about a specific important person**.
 
 Strong signals include forwarded/quoted messages, food preferences or restrictions, travel wishes, media/game/idol preferences, gifts, habits, explicit personality traits, speaking style, birthdays, anniversaries, meaningful dates and deliberately supplied cycle-calendar data.
 
