@@ -1,96 +1,113 @@
-# Person Memory
+<p align="center">
+  <a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a>
+</p>
 
-A lightweight, local-first memory skill for **Hermes Agent** that remembers one person's preferences, wishes, habits, personality evidence, speaking style, meaningful experiences, important dates, and other small details without stuffing an entire profile into every prompt.
+<p align="center">
+  <img src="assets/person-memory-hero.svg" alt="Person Memory — local-first memory for AI agents, grounded in evidence" width="100%">
+</p>
 
-The core design is simple:
+<p align="center">
+  <a href="LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/license-MIT-7C72E8?style=flat-square"></a>
+  <img alt="Python standard library only" src="https://img.shields.io/badge/Python-standard%20library%20only-3776AB?style=flat-square&logo=python&logoColor=white">
+  <img alt="Zero third-party dependencies" src="https://img.shields.io/badge/dependencies-zero-2F9E78?style=flat-square">
+  <img alt="Local first" src="https://img.shields.io/badge/storage-local--first-F3A875?style=flat-square">
+  <img alt="Tested with unittest" src="https://img.shields.io/badge/tests-unittest-5965A8?style=flat-square">
+</p>
 
-```text
-forwarded message
-      │
-      ├── raw message ───────────────► SQLite `messages`
-      │
-      └── conservative extraction ───► SQLite `memories`
-                                          │
-                         targeted recall ◄┘
+**Person Memory** is a unified Agent Skill for remembering one person's preferences, wishes, habits, communication patterns, meaningful experiences, and important dates. It keeps the original words as evidence, turns only useful details into compact structured memories, and recalls just what the current conversation needs.
+
+It is local-first, privacy-aware, and deliberately conservative: the goal is to remember a person more faithfully, not to invent a profile about them.
+
+> [!NOTE]
+> Person Memory is designed as an agent-independent skill. **Hermes Agent** is the first complete integration included in this repository and can run it as a dedicated independent agent today.
+
+## Why Person Memory
+
+Most agent memory systems are optimized for remembering the user, the task, or the entire conversation. Remembering a particular person calls for a different standard.
+
+- **Evidence over assumption.** Every meaningful memory can point back to the original message, source, and time.
+- **Precision over prompt stuffing.** Compact SQLite records are queried by topic instead of injecting a long profile into every model call.
+- **Change over permanence.** Temporary states stay temporary, contradictions keep their history, and later evidence can supersede older memories.
+- **Ownership over infrastructure.** The database stays local by default and the Python runtime uses no third-party packages.
+
+## How it works
+
+```mermaid
+flowchart LR
+    A[Forwarded or quoted message] --> B[Raw message evidence]
+    A --> C[Conservative extraction]
+    B --> D[(Local SQLite)]
+    C --> D
+    D --> E[Targeted recall]
+    E --> F[Only relevant context]
 ```
 
-## Why
+One message produces two complementary layers:
 
-Long prose profiles are easy to write but expensive to inject into every model call, difficult to update, and hard to trace back to the original conversation. Person Memory stores compact structured facts in SQLite while keeping the original message as evidence.
+1. `messages` preserves the original text, speaker, source, and timestamp.
+2. `memories` stores compact facts with kind, category, confidence, importance, evidence, and optional metadata.
 
-It is designed for questions such as:
+SQLite is the source of truth. Full-text search uses FTS5 when available and falls back to `LIKE`; WAL mode keeps lightweight local use reliable.
 
-- What does she like to eat? What does she avoid?
-- Which movies, anime, games, musicians or idols has she mentioned?
-- Where has she said she wants to travel?
-- What gifts has she casually said she likes?
-- What recurring personality or communication patterns have actual evidence?
-- What did she originally say, and when?
-- Is an anniversary or other important date approaching?
-- If cycle information was deliberately provided, is the next **approximate** calendar estimate approaching?
+## What it remembers
 
-## Features
+| Area | Examples |
+|---|---|
+| Preferences | food, drinks, books, fashion, places, dislikes and boundaries |
+| Wishes | trips, gifts, activities, films, anime, games and future plans |
+| Patterns | habits, communication style and personality evidence |
+| Experiences | meaningful events, people, work, study and personal stories |
+| Important dates | birthdays, anniversaries, recurring dates and reminders |
+| Sensitive calendar data | optional, deliberately supplied cycle dates — never inferred |
 
-- Local SQLite database; no server or database service.
-- Raw-message archive + structured long-term memories.
-- Conservative distinction between stable preferences and temporary states.
-- Evidence quotes and confidence per memory.
-- Categories for food, travel, films, anime, games, music, idols, gifts, personality, speech style, habits, dates, and more.
-- SQLite FTS5 search when available, with `LIKE` fallback.
-- WAL mode for reliable lightweight operation (`memory.db`, plus temporary `-wal`/`-shm` files while active).
-- Hermes-compatible `SKILL.md` with progressive disclosure.
-- Script-only daily Hermes cron check: reminders without daily LLM token spend.
-- Standard-library Python only. No pip dependencies.
+The model is open-ended, so agents can add categories without changing the database schema. See [`person-memory/SKILL.md`](person-memory/SKILL.md) for the complete memory contract.
 
-## Repository Layout
+## Designed for any agent, ready for Hermes
 
-```text
-person-memory/
-├── README.md
-├── LICENSE
-├── .gitignore
-├── person-memory/
-│   ├── SKILL.md
-│   └── scripts/
-│       └── person_memory.py
-├── hermes/
-│   ├── SOUL.md
-│   ├── config.example.yaml
-│   ├── install.sh
-│   └── setup-cron.sh
-└── tests/
-    └── test_person_memory.py
-```
+The portable core consists of three pieces:
 
-## Install for Hermes
+- [`person-memory/SKILL.md`](person-memory/SKILL.md) describes when and how an agent should use the skill.
+- [`person_memory.py`](person-memory/scripts/person_memory.py) provides deterministic storage, search, profile, and reminder commands.
+- [`triggers.json`](person-memory/triggers.json) and [`trigger.py`](person-memory/scripts/trigger.py) provide optional deterministic routing.
+
+Any agent that can load the skill instructions and invoke a local command can integrate these pieces. The repository currently ships a complete **Hermes independent-agent** setup with an installer, optional soul, example configuration, router rules, and script-only cron reminders.
+
+| Capability | Unified Agent Skill | Hermes integration |
+|---|:---:|:---:|
+| Skill contract and progressive disclosure | ✓ | ✓ |
+| Local SQLite CLI | ✓ | ✓ |
+| Deterministic trigger helper | ✓ | ✓ |
+| Dedicated agent persona | Agent-specific | Included |
+| Installer and example routing | Agent-specific | Included |
+| Zero-token scheduled date checks | Scheduler-specific | Included |
+
+## Quick start
+
+### 1. Clone and initialize
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/Hubujiu/person-memory.git
 cd person-memory
-./hermes/install.sh
+python3 person-memory/scripts/person_memory.py init
 ```
 
-Then register the person you want to remember:
+The default database is `~/.hermes/person-memory/memory.db`. Override it with `--db` when integrating another agent or choosing a different local data directory.
+
+### 2. Register a person
 
 ```bash
-python3 ~/.hermes/skills/productivity/person-memory/scripts/person_memory.py \
+python3 person-memory/scripts/person_memory.py \
   person-add "她" --aliases "宝贝,女朋友" --relationship partner
 ```
 
-The dedicated `SOUL.md` is optional. If this Hermes profile exists only for this purpose:
+Use the person's chosen name or alias. Never guess a legal name.
+
+### 3. Remember a message
+
+An agent performs conservative extraction, then sends one JSON document through standard input:
 
 ```bash
-cp hermes/SOUL.md ~/.hermes/SOUL.md
-```
-
-Do **not** overwrite an existing multi-purpose profile's `SOUL.md` unless that is intended.
-
-## Example: remember a forwarded message
-
-Hermes reads the message, loads the skill, performs conservative extraction, and writes both the raw message and structured memory. The low-level operation looks like this:
-
-```bash
-cat <<'JSON' | python3 ~/.hermes/skills/productivity/person-memory/scripts/person_memory.py remember-json
+cat <<'JSON' | python3 person-memory/scripts/person_memory.py remember-json
 {
   "person": "她",
   "message": {
@@ -114,10 +131,12 @@ cat <<'JSON' | python3 ~/.hermes/skills/productivity/person-memory/scripts/perso
 JSON
 ```
 
-## Recall
+The raw message is still preserved when nothing deserves structured extraction.
+
+### 4. Recall only what matters
 
 ```bash
-PM=~/.hermes/skills/productivity/person-memory/scripts/person_memory.py
+PM=person-memory/scripts/person_memory.py
 
 python3 "$PM" recall --person "她" --category food
 python3 "$PM" recall --person "她" --kind wish
@@ -126,11 +145,25 @@ python3 "$PM" search-messages --person "她" --query "北海道"
 python3 "$PM" profile --person "她"
 ```
 
-## Memory semantics
+### Install as a Hermes independent agent
 
-Person Memory deliberately avoids turning every sentence into a permanent personality trait.
+```bash
+./hermes/install.sh
+```
 
-| Statement | Stored as |
+Optionally copy the dedicated persona when the Hermes profile exists only for Person Memory:
+
+```bash
+cp hermes/SOUL.md ~/.hermes/SOUL.md
+```
+
+Do not overwrite an existing multi-purpose `SOUL.md` unless that is intentional. See [`hermes/config.example.yaml`](hermes/config.example.yaml) and [`hermes/ROUTER_AGENTS.example.md`](hermes/ROUTER_AGENTS.example.md) for integration examples.
+
+## Memory with restraint
+
+Person Memory does not turn every sentence into a permanent trait.
+
+| Statement | Interpretation |
 |---|---|
 | “今天突然想吃火锅” | temporary state |
 | “我一直都很喜欢火锅” | stable preference |
@@ -139,44 +172,98 @@ Person Memory deliberately avoids turning every sentence into a permanent person
 | “我就是比较慢热” | explicit personality evidence |
 | one short reply | **not** evidence that the person is introverted |
 
-Every meaningful structured memory can keep an `evidence_quote`, `confidence`, source message, and timestamps.
+Explicit statements carry more confidence than guesses. Personality traits require self-description, direct observation from the user, or repeated evidence. When a preference changes, new evidence can supersede the active memory without erasing the history.
+
+## Triggers and routing
+
+Person Memory supports four integration patterns:
+
+1. native semantic skill selection;
+2. deterministic keyword and regular-expression routing;
+3. an explicit `/person-memory` slash command;
+4. a dedicated router-agent convention.
+
+Management and recall intent take priority over ordinary remember phrases, and explicit exclusions such as “不要记” win over every positive match. See **[Trigger modes and integration examples](TRIGGERS.md)** for configuration, precedence, exit codes, and adapter patterns.
 
 ## Important dates and daily checks
 
-Important dates are stored as normal structured memories with date metadata. Run:
+Run a deterministic check for upcoming dates:
 
 ```bash
-python3 ~/.hermes/skills/productivity/person-memory/scripts/person_memory.py daily-check --days-ahead 7
+python3 person-memory/scripts/person_memory.py daily-check --days-ahead 7
 ```
 
-No output means there is nothing to remind you about.
-
-Hermes supports scheduled jobs and script-only cron execution, so this deterministic check does not need an LLM. On a current Hermes installation:
+No output means nothing is due. Hermes can schedule this as a script-only job, avoiding daily LLM token spend:
 
 ```bash
 ./hermes/setup-cron.sh local
 ```
 
-Or ask Hermes in natural language to create a daily 09:00 script-only job that runs the command above and delivers non-empty output to your preferred gateway.
+Cycle tracking is optional sensitive calendar data. It uses only dates deliberately provided by the user or person, never mood, behavior, purchases, or other inferred signals. Its output is an approximate calendar estimate, not medical advice or a prediction.
 
-## Cycle estimates
+## Privacy by default
 
-Cycle tracking is optional sensitive data. Person Memory only uses dates deliberately supplied by the user/person. It does not infer cycle information from mood, behavior, purchases, or other messages.
+The database can contain another person's conversations, preferences, relationship history, and health-related dates. Treat it accordingly.
 
-The daily checker can estimate the next start date from a provided last start date and average cycle length. This is only a calendar estimate; real cycles vary and this feature is not a medical prediction.
+- Keep `memory.db`, `memory.db-wal`, and `memory.db-shm` local and out of Git.
+- Obtain appropriate consent before retaining another person's private information.
+- Do not expose the database to unrelated agents by default.
+- Do not infer health, sexual, financial, authentication, or precise-location information.
+- Honor update and forget requests by changing the stored records, not merely hiding them in chat.
+- Protect synced copies and backups with the same care as the live database.
 
-## Privacy
+## Repository layout
 
-This project is local-first. The actual database is intentionally ignored by Git. If you sync or back it up, treat it as highly private data: it can contain another person's conversations, preferences, health-related dates, and relationship history.
+```text
+person-memory/
+├── README.md                 # English homepage
+├── README.zh-CN.md           # Simplified Chinese homepage
+├── TRIGGERS.md               # Routing and trigger reference
+├── assets/                   # Repository artwork
+├── person-memory/
+│   ├── SKILL.md              # Portable Agent Skill contract
+│   ├── triggers.json         # Optional deterministic trigger rules
+│   └── scripts/
+│       ├── person_memory.py  # SQLite memory CLI
+│       └── trigger.py        # Trigger helper
+├── hermes/                   # Complete Hermes independent-agent integration
+└── tests/                    # Standard-library unit tests
+```
 
-Use it with the other person's privacy and consent in mind. Do not expose the database to unrelated agents by default.
-
-## Test
+## Testing
 
 ```bash
 python3 -m unittest discover -s tests -v
 ```
 
+The project uses Python's standard library only; no package installation or database service is required.
+
+## FAQ
+
+<details>
+<summary><strong>Does Person Memory require Hermes?</strong></summary>
+
+No. The skill contract, SQLite CLI, and optional trigger helper form the portable core. Hermes is the first complete independent-agent integration shipped with the project.
+</details>
+
+<details>
+<summary><strong>Does it send memories to a cloud service?</strong></summary>
+
+No. Person Memory itself reads and writes a local SQLite database. The privacy behavior of the agent or model using the skill depends on that agent's configuration.
+</details>
+
+<details>
+<summary><strong>Why keep both raw messages and structured memories?</strong></summary>
+
+Structured memories make recall small and fast. Raw messages preserve context and evidence, so an answer can be checked against what was actually said.
+</details>
+
+<details>
+<summary><strong>Is cycle tracking a health prediction?</strong></summary>
+
+No. It is an optional calendar estimate based only on dates and an average supplied deliberately by the user. Real cycles vary.
+</details>
+
 ## License
 
-MIT
+[MIT](LICENSE) © Hubujiu
