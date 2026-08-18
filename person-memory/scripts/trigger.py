@@ -48,12 +48,20 @@ def match_text(text: str, config: dict) -> dict:
             }
 
     matched_terms: list[str] = []
-    matched_group = None
-    for group, keywords in config.get("keywords", {}).items():
+    matched_groups: list[str] = []
+    keyword_groups = config.get("keywords", {})
+    for group, keywords in keyword_groups.items():
         group_hits = [kw for kw in keywords if str(kw).casefold() in lowered]
         if group_hits:
             matched_terms.extend(group_hits)
-            matched_group = matched_group or group
+            matched_groups.append(group)
+
+    # Management/update intent must win over generic content phrases. Recall
+    # should also win over ordinary remember phrases when both appear.
+    priority = config.get("group_priority", ["manage", "recall", "remember"])
+    matched_group = next((group for group in priority if group in matched_groups), None)
+    if matched_group is None and matched_groups:
+        matched_group = matched_groups[0]
 
     regex_hits: list[str] = []
     for pattern in config.get("regex", []):
