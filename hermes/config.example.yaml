@@ -9,3 +9,16 @@ skills:
 cron:
   # Keep unattended jobs stable if your Hermes release supports this guard.
   model_drift_guard: true
+
+# Optional short slash aliases. Hermes forwards the user's trailing arguments
+# to /person-memory, e.g. `/pm 她说她不吃香菜`.
+quick_commands:
+  pm:
+    type: alias
+    target: /person-memory
+  remember:
+    type: alias
+    target: /person-memory
+  person:
+    type: alias
+    target: /person-memory
